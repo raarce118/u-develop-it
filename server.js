@@ -1,16 +1,33 @@
-const mysql = require('mysql2');
 const express = require('express');
+const db = require('./db/connection');
+const apiRoutes = require('./routes/apiRoutes');
 
 const PORT = process.env.PORT || 3001;
 const app = express();
-const inputCheck = require('./utils/inputCheck');
 
 // Express middleware
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+// Use apiRoutes
+app.use('/api', apiRoutes);
+
+// Default response for any other request (Not Found)
+app.use((req, res) => {
+  res.status(404).end();
+});
+
+// Start server after DB connection
+db.connect(err => {
+  if (err) throw err;
+  console.log('Database connected.');
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+});
+
 // Connect to database
-const db = mysql.createConnection(
+/* const db = mysql.createConnection(
     {
       host: 'localhost',
       // Your MySQL username,
@@ -20,10 +37,10 @@ const db = mysql.createConnection(
       database: 'election'
     },
     console.log('Connected to the election database.')
-  );
+  ); */
 
 // Get all candidates and their party affiliation
-app.get('/api/candidates', (req, res) => {
+/* app.get('/api/candidates', (req, res) => {
     const sql = `SELECT candidates.*, parties.name 
                   AS party_name 
                   FROM candidates 
@@ -40,10 +57,10 @@ app.get('/api/candidates', (req, res) => {
         data: rows
       });
     });
-  });
+  }); */
   
   // Get single candidate with party affiliation
-  app.get('/api/candidate/:id', (req, res) => {
+  /* app.get('/api/candidate/:id', (req, res) => {
     const sql = `SELECT candidates.*, parties.name 
                  AS party_name 
                  FROM candidates 
@@ -62,10 +79,10 @@ app.get('/api/candidates', (req, res) => {
         data: row
       });
     });
-  });
+  }); */
 
   // Delete a candidate
-app.delete('/api/candidate/:id', (req, res) => {
+/* app.delete('/api/candidate/:id', (req, res) => {
     const sql = `DELETE FROM candidates WHERE id = ?`;
     const params = [req.params.id];
     db.query(sql, params, (err, result) => {
@@ -83,10 +100,10 @@ app.delete('/api/candidate/:id', (req, res) => {
         });
       }
     });
-  });
+  }); */
 
   // Update a candidate's party
-app.put('/api/candidate/:id', (req, res) => {
+/* app.put('/api/candidate/:id', (req, res) => {
     // Candidate is allowed to not have party affiliation
   const errors = inputCheck(req.body, 'party_id');
   if (errors) {
@@ -112,7 +129,7 @@ app.put('/api/candidate/:id', (req, res) => {
         });
       }
     });
-  });
+  }); */
 
 
 
@@ -268,10 +285,10 @@ console.log(result);
 }); */
 
 // Default response for any other request (Not Found)
-app.use((req, res) => {
+/* app.use((req, res) => {
   res.status(404).end();
 });
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-});
+}); */
